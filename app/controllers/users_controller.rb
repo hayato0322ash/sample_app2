@@ -14,9 +14,9 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
-      log_in @user
-      flash[:success] = "ユーザー登録が完了しました"
-      redirect_to @user
+      @user.send_activation_email
+      flash[:info] = "メールからアカウントのアクティベーションをしてください。"
+      redirect_to root_url
     else
       render "new"
     end
@@ -62,6 +62,7 @@ class UsersController < ApplicationController
     
     def correct_user
       @user = User.find(params[:id])
+      flash[:danger] = "権限がありません。"
       redirect_to(root_url) unless current_user?(@user)
     end
 
